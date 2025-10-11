@@ -16,3 +16,5 @@
 /workspace/src/WeatherApp.Infrastructure/obj/Debug/net8.0/refint/WeatherApp.Infrastructure.dll
 /workspace/src/WeatherApp.Infrastructure/obj/Debug/net8.0/WeatherApp.Infrastructure.pdb
 /workspace/src/WeatherApp.Infrastructure/obj/Debug/net8.0/ref/WeatherApp.Infrastructure.dll
+/workspace/src/WeatherApp.Infrastructure/bin/Debug/net8.0/WeatherApp.Infrastructure.runtimeconfig.json
+/workspace/src/WeatherApp.Infrastructure/obj/Debug/net8.0/WeatherApp.Infrastructure.genruntimeconfig.cache

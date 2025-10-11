@@ -1,42 +1,64 @@
+using Microsoft.EntityFrameworkCore;
+using WeatherApp.Application.Abstractions;
+using WeatherApp.Application.Interfaces;
+using WeatherApp.Application.Services;
+using WeatherApp.Domain.Repositories;
+using WeatherApp.Domain.Services;
+using WeatherApp.Infrastructure.Persistence;
+using WeatherApp.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Database (SQLite for simplicity)
+var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=weather.db";
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+
+// DI bindings
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IWeatherReadingRepository, WeatherReadingRepository>();
+builder.Services.AddScoped<IAlertPolicyService, AlertPolicyService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-var summaries = new[]
+// Minimal endpoints
+app.MapGet("/api/locations/search", async (string q, int limit, ILocationService service, CancellationToken ct) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var result = await service.SearchAsync(q, limit, ct);
+    return result.Success ? Results.Ok(result.Value) : Results.BadRequest(new { error = result.Error });
+}).WithOpenApi();
 
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/locations", async (CreateLocationRequest request, ILocationService service, CancellationToken ct) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var result = await service.CreateAsync(request.Name, request.Latitude, request.Longitude, ct);
+    return result.Success ? Results.Created($"/api/locations/{result.Value!.Id}", result.Value) : Results.BadRequest(new { error = result.Error });
+}).WithOpenApi();
+
+app.MapGet("/api/weather/current/{locationId}", async (Guid locationId, IWeatherService service, CancellationToken ct) =>
+{
+    var result = await service.GetCurrentAsync(locationId, ct);
+    return result.Success ? Results.Ok(result.Value) : Results.NotFound(new { error = result.Error });
+}).WithOpenApi();
+
+app.MapGet("/api/alerts/{locationId}", async (Guid locationId, IAlertService service, CancellationToken ct) =>
+{
+    var result = await service.EvaluateAlertsAsync(locationId, ct);
+    return result.Success ? Results.Ok(result.Value) : Results.BadRequest(new { error = result.Error });
+}).WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public record CreateLocationRequest(string Name, double Latitude, double Longitude);
