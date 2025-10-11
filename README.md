@@ -132,5 +132,3 @@ src/
   WeatherApp.Api/
 ```
 
-## 9. Licença
-MIT (ou a definir).
