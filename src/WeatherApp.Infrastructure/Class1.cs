@@ -1,6 +1,4 @@
-﻿namespace WeatherApp.Infrastructure;
+namespace WeatherApp.Infrastructure;
 
-public class Class1
-{
-
-}
+// Placeholder to keep project compiling while we add DbContext.
+public class Placeholder { }
