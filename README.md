@@ -1,6 +1,6 @@
 # WeatherApp Acessível (Clean Architecture, .NET 8)
 
-Aplicativo e API que fornecem informações de clima com foco em simplicidade, confiabilidade e acessibilidade. O projeto foi estruturado em Clean Architecture para facilitar manutenção, testes e evolução.
+Aplicativo que fornecem informações de clima com foco em simplicidade, confiabilidade e acessibilidade. O projeto foi estruturado em Clean Architecture para facilitar manutenção, testes e evolução.
 
 ## 1. Definição do Projeto
 
@@ -54,7 +54,7 @@ Camadas e responsabilidades:
   - Minimal APIs com Swagger.
   - Injeta serviços, repositórios, DbContext e políticas de alerta.
 
-Diagrama do banco (inspirado na imagem fornecida) foi traduzido para as entidades/valores acima. Nomes das colunas seguem convenções da imagem quando aplicável (`Localizacao`, `Clima`, `Alerta`).
+Diagrama do banco foi traduzido para as entidades/valores acima. Nomes das colunas seguem convenções da imagem quando aplicável (`Localizacao`, `Clima`, `Alerta`).
 
 ## 3. Configuração e Execução
 
