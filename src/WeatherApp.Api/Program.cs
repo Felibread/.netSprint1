@@ -2,10 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using WeatherApp.Application.Abstractions;
 using WeatherApp.Application.Interfaces;
 using WeatherApp.Application.Services;
+using WeatherApp.Application.External;
 using WeatherApp.Domain.Repositories;
 using WeatherApp.Domain.Services;
 using WeatherApp.Infrastructure.Persistence;
 using WeatherApp.Infrastructure.Repositories;
+using WeatherApp.Infrastructure.External.OpenWeather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,7 @@ builder.Services.AddScoped<IAlertPolicyService, AlertPolicyService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
+builder.Services.AddHttpClient<IExternalWeatherClient, OpenWeatherClient>();
 
 var app = builder.Build();
 
@@ -51,6 +54,12 @@ app.MapGet("/api/weather/current/{locationId}", async (Guid locationId, IWeather
 {
     var result = await service.GetCurrentAsync(locationId, ct);
     return result.Success ? Results.Ok(result.Value) : Results.NotFound(new { error = result.Error });
+}).WithOpenApi();
+
+app.MapPost("/api/weather/refresh/{locationId}", async (Guid locationId, IWeatherService service, CancellationToken ct) =>
+{
+    var result = await service.RefreshCurrentAsync(locationId, ct);
+    return result.Success ? Results.Ok(result.Value) : Results.BadRequest(new { error = result.Error });
 }).WithOpenApi();
 
 app.MapGet("/api/alerts/{locationId}", async (Guid locationId, IAlertService service, CancellationToken ct) =>

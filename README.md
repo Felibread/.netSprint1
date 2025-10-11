@@ -87,6 +87,19 @@ $HOME/dotnet/dotnet run --project src/WeatherApp.Api/WeatherApp.Api.csproj --url
 ```
 Acesse a documentação: `http://localhost:5187/swagger`.
 
+### Integração com OpenWeather
+- Crie uma conta e obtenha a chave em `https://openweathermap.org/api`.
+- Configure em `src/WeatherApp.Api/appsettings.json`:
+```json
+{
+  "OpenWeather": { "ApiKey": "SUA_CHAVE" }
+}
+```
+- Atualize a leitura atual a partir do OpenWeather e persista:
+```bash
+curl -X POST http://localhost:5187/api/weather/refresh/{locationId}
+```
+
 ## 4. Endpoints Principais
 
 - `GET /api/locations/search?q={texto}&limit={n}`: busca localidades.
