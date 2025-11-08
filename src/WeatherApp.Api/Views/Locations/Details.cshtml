@@ -1,0 +1,107 @@
+@model LocationDetailsViewModel
+@{
+    ViewData["Title"] = $"Detalhes - {Model.Location.Name}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@Model.Location.Name</h1>
+        <p class="text-muted mb-0">
+            <i class="bi bi-geo-alt-fill me-1"></i>
+            Coordenadas: @Model.Location.Latitude, @Model.Location.Longitude
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-controller="Locations" asp-action="Index">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+        <a class="btn btn-outline-primary" href="/locais/editar/@Model.Location.Id">
+            <i class="bi bi-pencil-square me-1"></i>Editar
+        </a>
+        <form action="/locais/remover/@Model.Location.Id" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Deseja remover este local?');">
+                <i class="bi bi-trash me-1"></i>Remover
+            </button>
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>@Model.ErrorMessage
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0"><i class="bi bi-thermometer-half me-2"></i>Condições atuais</h2>
+            </div>
+            <div class="card-body">
+                @if (Model.CurrentWeather is null)
+                {
+                    <p class="text-muted mb-0">Sem leituras recentes para este local.</p>
+                }
+                else
+                {
+                    <p class="mb-2">
+                        <span class="display-5 fw-bold">@Model.CurrentWeather.Temperature.ToString("F1")°@Model.CurrentWeather.TemperatureUnit</span>
+                    </p>
+                    <ul class="list-unstyled text-muted">
+                        <li><i class="bi bi-clock-history me-2"></i>Observado em @Model.CurrentWeather.ObservedAt.LocalDateTime</li>
+                        <li><i class="bi bi-moisture me-2"></i>Umidade: @Model.CurrentWeather.HumidityPercent.ToString("F0")%</li>
+                        <li><i class="bi bi-wind me-2"></i>Vento: @Model.CurrentWeather.WindSpeedKmh.ToString("F1") km/h</li>
+                        <li><i class="bi bi-water me-2"></i>Chance de precipitação: @Model.CurrentWeather.PrecipitationProbabilityPercent.ToString("F0")%</li>
+                        <li><i class="bi bi-cloud-sun me-2"></i>Condição: @Model.CurrentWeather.Condition</li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0"><i class="bi bi-bell-fill me-2"></i>Alertas ativos</h2>
+                <span class="badge bg-primary rounded-pill">@Model.Alerts.Count</span>
+            </div>
+            <div class="card-body">
+                @if (!Model.Alerts.Any())
+                {
+                    <p class="text-muted mb-0">Nenhum alerta gerado para esta localização.</p>
+                }
+                else
+                {
+                    <div class="list-group">
+                        @foreach (var alert in Model.Alerts)
+                        {
+                            <div class="list-group-item list-group-item-action d-flex align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1">@alert.Title</h5>
+                                    <p class="mb-1 text-muted">@alert.Message</p>
+                                    <small class="text-muted">
+                                        Emitido em @alert.CreatedAt.LocalDateTime |
+                                        @if (alert.ExpiresAt.HasValue)
+                                        {
+                                            <span>Expira em @alert.ExpiresAt.Value.LocalDateTime</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Sem data de expiração</span>
+                                        }
+                                    </small>
+                                </div>
+                                <span class="badge @(alert.IsActive ? "bg-danger" : "bg-secondary") ms-3">
+                                    @alert.Type
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

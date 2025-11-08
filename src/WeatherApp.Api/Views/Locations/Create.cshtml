@@ -1,0 +1,29 @@
+@model LocationFormViewModel
+@{
+    ViewData["Title"] = "Novo local";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Cadastrar novo local</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">
+        <i class="bi bi-arrow-left me-1"></i>Voltar
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form action="/locais/novo" method="post">
+            @Html.AntiForgeryToken()
+            <partial name="_LocationForm" model="Model" />
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i>Salvar
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "TdQjSAe4reY=",
+  "dgSpecHash": "xHpY/3kU8+k=",
   "success": true,
-  "projectFilePath": "/workspace/src/WeatherApp.Application/WeatherApp.Application.csproj",
+  "projectFilePath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Application/WeatherApp.Application.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

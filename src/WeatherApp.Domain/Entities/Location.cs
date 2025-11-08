@@ -16,4 +16,19 @@ public class Location
         Name = name.Trim();
         Coordinates = coordinates ?? throw new ArgumentNullException(nameof(coordinates));
     }
+
+    private Location()
+    {
+        Name = string.Empty;
+        Coordinates = new Coordinates(0, 0);
+    }
+
+    public void Update(string name, Coordinates coordinates)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Location name is required.", nameof(name));
+
+        Name = name.Trim();
+        Coordinates = coordinates ?? throw new ArgumentNullException(nameof(coordinates));
+    }
 }

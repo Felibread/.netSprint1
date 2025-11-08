@@ -1,3 +1,4 @@
+using System.Linq;
 using WeatherApp.Application.Abstractions;
 using WeatherApp.Application.Common;
 using WeatherApp.Application.DTOs;
@@ -36,20 +37,103 @@ public class LocationService : ILocationService
         }
     }
 
-    public async Task<Result<IReadOnlyList<LocationDto>>> SearchAsync(string query, int limit = 20, CancellationToken cancellationToken = default)
+    public async Task<Result<LocationDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(query))
-                return Result<IReadOnlyList<LocationDto>>.Fail("Consulta vazia.");
+            var location = await _locationRepository.GetByIdAsync(id, cancellationToken);
+            if (location is null)
+            {
+                return Result<LocationDto>.Fail("Localização não encontrada.");
+            }
 
-            var locations = await _locationRepository.SearchByNameAsync(query.Trim(), limit, cancellationToken);
-            var dtos = locations.Select(l => new LocationDto(l.Id, l.Name, l.Coordinates.Latitude, l.Coordinates.Longitude)).ToList();
-            return Result<IReadOnlyList<LocationDto>>.Ok(dtos);
+            var dto = new LocationDto(location.Id, location.Name, location.Coordinates.Latitude, location.Coordinates.Longitude);
+            return Result<LocationDto>.Ok(dto);
         }
         catch (Exception ex)
         {
-            return Result<IReadOnlyList<LocationDto>>.Fail($"Erro na busca: {ex.Message}");
+            return Result<LocationDto>.Fail($"Erro ao obter localização: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<LocationDto>> UpdateAsync(Guid id, string name, double latitude, double longitude, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var location = await _locationRepository.GetTrackedAsync(id, cancellationToken);
+            if (location is null)
+            {
+                return Result<LocationDto>.Fail("Localização não encontrada.");
+            }
+
+            location.Update(name, new Coordinates(latitude, longitude));
+            await _locationRepository.UpdateAsync(location, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var dto = new LocationDto(location.Id, location.Name, location.Coordinates.Latitude, location.Coordinates.Longitude);
+            return Result<LocationDto>.Ok(dto);
+        }
+        catch (Exception ex)
+        {
+            return Result<LocationDto>.Fail($"Erro ao atualizar localização: {ex.Message}");
+        }
+    }
+
+    public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _locationRepository.DeleteAsync(id, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Erro ao remover localização: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<PagedResult<LocationDto>>> SearchAsync(
+        string? name,
+        double? minLatitude,
+        double? maxLatitude,
+        double? minLongitude,
+        double? maxLongitude,
+        int pageNumber = 1,
+        int pageSize = 10,
+        string? sortBy = null,
+        bool ascending = true,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return Result<PagedResult<LocationDto>>.Fail("Parâmetros de paginação inválidos.");
+            }
+
+            var (items, totalCount) = await _locationRepository.SearchAsync(
+                name,
+                minLatitude,
+                maxLatitude,
+                minLongitude,
+                maxLongitude,
+                pageNumber,
+                pageSize,
+                sortBy,
+                ascending,
+                cancellationToken);
+
+            var dtos = items
+                .Select(l => new LocationDto(l.Id, l.Name, l.Coordinates.Latitude, l.Coordinates.Longitude))
+                .ToList();
+
+            var paged = new PagedResult<LocationDto>(dtos, pageNumber, pageSize, totalCount);
+            return Result<PagedResult<LocationDto>>.Ok(paged);
+        }
+        catch (Exception ex)
+        {
+            return Result<PagedResult<LocationDto>>.Fail($"Erro na busca de localizações: {ex.Message}");
         }
     }
 }

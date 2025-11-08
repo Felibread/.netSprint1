@@ -23,4 +23,23 @@ public class Alert
         Message = message.Trim();
         ExpiresAt = expiresAt;
     }
+
+    private Alert()
+    {
+        Title = string.Empty;
+        Message = string.Empty;
+    }
+
+    public void Update(AlertType type, string title, string message, DateTimeOffset? expiresAt)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Title is required.", nameof(title));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message is required.", nameof(message));
+
+        Type = type;
+        Title = title.Trim();
+        Message = message.Trim();
+        ExpiresAt = expiresAt;
+    }
 }

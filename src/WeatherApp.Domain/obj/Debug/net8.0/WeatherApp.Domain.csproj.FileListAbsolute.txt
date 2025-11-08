@@ -10,3 +10,15 @@
 /workspace/src/WeatherApp.Domain/obj/Debug/net8.0/refint/WeatherApp.Domain.dll
 /workspace/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.pdb
 /workspace/src/WeatherApp.Domain/obj/Debug/net8.0/ref/WeatherApp.Domain.dll
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/bin/Debug/net8.0/WeatherApp.Domain.deps.json
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/bin/Debug/net8.0/WeatherApp.Domain.dll
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/bin/Debug/net8.0/WeatherApp.Domain.pdb
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.AssemblyInfoInputs.cache
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.AssemblyInfo.cs
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.csproj.CoreCompileInputs.cache
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.sourcelink.json
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.dll
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/refint/WeatherApp.Domain.dll
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/WeatherApp.Domain.pdb
+/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/Debug/net8.0/ref/WeatherApp.Domain.dll

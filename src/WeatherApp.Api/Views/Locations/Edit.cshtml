@@ -1,0 +1,29 @@
+@model LocationFormViewModel
+@{
+    ViewData["Title"] = "Editar local";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Editar local</h1>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">
+        <i class="bi bi-arrow-left me-1"></i>Voltar aos detalhes
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form action="/locais/editar/@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <partial name="_LocationForm" model="Model" />
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-2"></i>Salvar alterações
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

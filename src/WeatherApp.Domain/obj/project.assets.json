@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "/home/ubuntu/.nuget/packages/": {}
+    "/Users/nataliadeoliveirasantos/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/workspace/src/WeatherApp.Domain/WeatherApp.Domain.csproj",
+      "projectUniqueName": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/WeatherApp.Domain.csproj",
       "projectName": "WeatherApp.Domain",
-      "projectPath": "/workspace/src/WeatherApp.Domain/WeatherApp.Domain.csproj",
-      "packagesPath": "/home/ubuntu/.nuget/packages/",
-      "outputPath": "/workspace/src/WeatherApp.Domain/obj/",
+      "projectPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/WeatherApp.Domain.csproj",
+      "packagesPath": "/Users/nataliadeoliveirasantos/.nuget/packages/",
+      "outputPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/ubuntu/.nuget/NuGet/NuGet.Config"
+        "/Users/nataliadeoliveirasantos/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -64,7 +64,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/home/ubuntu/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

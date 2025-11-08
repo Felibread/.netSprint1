@@ -1,134 +1,160 @@
-# WeatherApp Acessível (Clean Architecture, .NET 8)
+# WeatherApp Acessível (Clean Architecture + ASP.NET Core MVC)
 
-Aplicativo que fornecem informações de clima com foco em simplicidade, confiabilidade e acessibilidade. O projeto foi estruturado em Clean Architecture para facilitar manutenção, testes e evolução.
+Aplicação .NET 8 que combina uma camada Web MVC com uma Web API hipertextual para monitoramento de clima, gestão de localidades e geração de alertas inteligentes. A solução segue Clean Architecture para manter o domínio independente da infraestrutura.
 
-## 1. Definição do Projeto
+## 1. Visão Geral do Projeto
 
-- **Objetivo do Projeto**: Tornar a consulta do tempo simples e acessível para todas as pessoas, incluindo pessoas com deficiência. O app oferece previsão atual e geração de alertas inteligentes (ex.: aviso antecipado de chuva) com uma experiência inclusiva.
-- **Problema**: Aplicativos atuais costumam ter interfaces complexas, excesso de dados, e pouca compatibilidade com tecnologias assistivas (leitores de tela, descrições de imagens, comandos de voz).
-- **Solução**: API e camadas de domínio/aplicação que priorizam clareza, modelos fortes e regras de negócio para gerar previsões/alertas, prontas para serem consumidas por um cliente móvel ou web acessível.
+- **Objetivo**: disponibilizar consultas meteorológicas simples, acessíveis e confiáveis, com regras de negócio para emissão de alertas inteligentes (chuva, temperatura extrema).
+- **Camadas entregues nesta sprint**:
+  - UI MVC com layout responsivo em Bootstrap 5, rotas personalizadas e validação de ViewModels.
+  - Web API com contratos REST, paginação, filtros, ordenação e navegação HATEOAS.
+  - Serviços de aplicação que encapsulam regras e tratativas (`Result`/`PagedResult`).
 
-### Escopo (MVP)
-- Cadastro e busca de localidades.
-- Consulta de leitura climática atual por localidade.
-- Avaliação de alertas inteligentes (chuva, temperatura extrema) a partir da última leitura disponível.
-- API documentada com Swagger.
+### Funcionalidades Principais
+- CRUD completo de localidades (listas com filtros, detalhes, edição e exclusão).
+- Consulta de leitura climática atual por localidade e exibição amigável na UI.
+- Avaliação dinâmica de alertas baseada em políticas de domínio.
+- Endpoints de pesquisa para cada domínio (Locations, WeatherReadings, Alerts) com metadados de paginação e links hipertexto.
 
-### Requisitos Funcionais
-- **RF1**: Cadastrar localidade informando nome, latitude e longitude.
-- **RF2**: Buscar localidades por nome (prefixo/contém) com limite configurável.
-- **RF3**: Obter leitura climática atual de uma localidade.
-- **RF4**: Avaliar e retornar alertas sugeridos (chuva/temperatura extrema) para uma localidade.
-
-### Requisitos Não Funcionais
-- **RNF1**: Clean Architecture com baixo acoplamento entre camadas.
-- **RNF2**: Persistência via EF Core (SQLite por padrão).
-- **RNF3**: API REST com documentação Swagger/OpenAPI.
-- **RNF4**: Código legível, validado e com tratamento de erros simples via `Result`.
-- **RNF5**: Acessibilidade como diretriz de design para clientes que consumirem a API (descrições, textos claros, fluxos simples).
-
-## 2. Arquitetura (Clean Architecture)
-
-Camadas e responsabilidades:
+## 2. Arquitetura em Camadas
 
 - **Domain (`src/WeatherApp.Domain`)**
-  - Entidades: `Location`, `WeatherReading`, `Alert`.
-  - Value Objects: `Coordinates`, `Probability`.
-  - Enums: `AlertType`, `TemperatureUnit`, `WeatherCondition`.
-  - Serviços de domínio: `IAlertPolicyService`/`AlertPolicyService` (regras para gerar alertas).
-  - Contratos de repositório: `ILocationRepository`, `IWeatherReadingRepository`.
+  - Entidades (`Location`, `WeatherReading`, `Alert`) e Value Objects (`Coordinates`, `Probability`).
+  - Serviços de domínio (`IAlertPolicyService`) responsáveis por regras de alerta.
+  - Repositórios abstratos para Localizações, Leituras e Alertas.
 
 - **Application (`src/WeatherApp.Application`)**
-  - DTOs: `LocationDto`, `WeatherReadingDto`, `AlertDto`.
-  - Serviços (casos de uso): `LocationService`, `WeatherService`, `AlertService`.
-  - Abstração de UoW: `IUnitOfWork`.
-  - Tipo utilitário de retorno: `Result<T>`.
+  - DTOs e comandos (`LocationDto`, `WeatherReadingDto`, `AlertDto`, `WeatherReadingUpsertDto`, `AlertUpsertDto`).
+  - Casos de uso (`LocationService`, `WeatherService`, `AlertService`) com paginação e validações.
+  - Resultados padronizados (`Result<T>`, `PagedResult<T>`) e `IUnitOfWork`.
 
 - **Infrastructure (`src/WeatherApp.Infrastructure`)**
-  - EF Core: `AppDbContext` e configurações de mapeamento (`Configurations/*`).
-  - Repositórios concretos: `LocationRepository`, `WeatherReadingRepository`.
-  - `UnitOfWork` para persistência.
-  - Provider: SQLite por padrão (pode trocar por SQL Server/PostgreSQL alterando pacotes/UseXxx).
+  - EF Core + SQLite (`AppDbContext`) com mapeamentos fluentes.
+  - Repositórios concretos (`LocationRepository`, `WeatherReadingRepository`, `AlertRepository`) e `UnitOfWork`.
 
-- **API (`src/WeatherApp.Api`)**
-  - Minimal APIs com Swagger.
-  - Injeta serviços, repositórios, DbContext e políticas de alerta.
-
-Diagrama do banco foi traduzido para as entidades/valores acima. Nomes das colunas seguem convenções da imagem quando aplicável (`Localizacao`, `Clima`, `Alerta`).
+- **Web (`src/WeatherApp.Api`)**
+  - Controllers MVC para Home/Locations com layouts, formulários e validações.
+  - Controllers API (`LocationsController`, `WeatherReadingsController`, `AlertsController`) com rotas versionadas e respostas HATEOAS.
+  - Swagger configurado para documentação automática das rotas.
 
 ## 3. Configuração e Execução
 
 ### Pré-requisitos
-- .NET SDK 8 (o repositório inclui `dotnet-install.sh` para instalação local).
+- .NET SDK 8 (use `dotnet-install.sh` caso não possua o SDK localmente).
 
-### Instalar SDK local (se necessário)
 ```bash
 bash dotnet-install.sh --channel 8.0 --install-dir "$HOME/dotnet"
 export PATH="$HOME/dotnet:$PATH"
 ```
 
-### Restaurar e compilar
+### Restaurar e Compilar
+
 ```bash
 $HOME/dotnet/dotnet restore src/WeatherApp.sln
 $HOME/dotnet/dotnet build src/WeatherApp.sln -c Debug
 ```
 
-### Configurar conexão
-A API usa SQLite por padrão. Configure em `src/WeatherApp.Api/appsettings.json`:
+> Observação: em ambientes sem acesso à internet o `restore` pode exigir cache prévio dos pacotes NuGet. Caso encontre erros de rede, execute os comandos acima em um ambiente conectado para preencher o cache local.
+
+### Configurar a Conexão
+
+`appsettings.json` já aponta para SQLite (`weather.db`). Ajuste se desejar outro provider:
+
 ```json
 {
-  "ConnectionStrings": { "Default": "Data Source=weather.db" }
+  "ConnectionStrings": {
+    "Default": "Data Source=weather.db"
+  }
 }
 ```
 
-### Executar a API
+### Executar
+
 ```bash
 $HOME/dotnet/dotnet run --project src/WeatherApp.Api/WeatherApp.Api.csproj --urls http://localhost:5187
+(pode ser outra porta, basta substituit pela certa)
 ```
-Acesse a documentação: `http://localhost:5187/swagger`.
 
-## 4. Endpoints Principais
+- UI MVC: `http://localhost:5187`
+- Swagger UI: `http://localhost:5187/swagger`
 
-- `GET /api/locations/search?q={texto}&limit={n}`: busca localidades.
-- `POST /api/locations` body:
+## 4. Camada Web (MVC)
+
+- Rotas convencionais + rotas personalizadas (`/locais`, `/locais/detalhes/{id}`, `/sobre`).
+- Layout `_Layout` com cabeçalho, navegação e rodapé responsivos.
+- Views fortemente tipadas com `ViewModels` e validação via DataAnnotations + jQuery Validation.
+- Listagem paginada de localidades com filtros de nome/latitude/longitude e ordenação.
+- Tela de detalhes exibindo leitura meteorológica atual e alertas gerados em tempo real.
+
+## 5. Web API com HATEOAS
+
+Rotas expostas (todas com suporte a paginação, ordenação `sortBy`, `ascending` e filtros específicos):
+
+- `GET /api/locations/search`
+- `POST /api/locations`
+- `PUT /api/locations/{id}`
+- `DELETE /api/locations/{id}`
+- `GET /api/weather-readings/search`
+- `GET /api/weather-readings/current/{locationId}`
+- `POST /api/weather-readings`
+- `PUT /api/weather-readings/{id}`
+- `DELETE /api/weather-readings/{id}`
+- `GET /api/alerts/search`
+- `GET /api/alerts/evaluate/{locationId}`
+- `POST /api/alerts`
+- `PUT /api/alerts/{id}`
+- `DELETE /api/alerts/{id}`
+
+As respostas de busca retornam objeto `PagedResponse<T>` com:
+
 ```json
-{ "name": "São Paulo", "latitude": -23.55, "longitude": -46.63 }
+{
+  "data": [ /* itens */ ],
+  "pagination": { "pageNumber": 1, "pageSize": 10, "totalItems": 42, "totalPages": 5 },
+  "links": [
+    { "rel": "self", "href": "...", "method": "GET" },
+    { "rel": "next", "href": "...", "method": "GET" }
+  ]
+}
 ```
-- `GET /api/weather/current/{locationId}`: leitura atual.
-- `GET /api/alerts/{locationId}`: avalia alertas a partir da leitura atual.
 
-Respostas seguem o envelope de `Result` nas camadas internas, mas os endpoints retornam HTTP adequado (`200/201/400/404`).
+## 6. Migrações de Banco de Dados
 
-## 5. Migrações de Banco de Dados
+Para criar/aplicar migrações:
 
-Este esqueleto já mapeia entidades, mas não inclui migrações geradas. Para criá-las:
 ```bash
 $HOME/dotnet/dotnet tool install --global dotnet-ef --version 8.* || true
 export PATH="$HOME/.dotnet/tools:$PATH"
-$HOME/dotnet/dotnet ef migrations add Initial --project src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj --startup-project src/WeatherApp.Api/WeatherApp.Api.csproj --context WeatherApp.Infrastructure.Persistence.AppDbContext
-$HOME/dotnet/dotnet ef database update --project src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj --startup-project src/WeatherApp.Api/WeatherApp.Api.csproj --context WeatherApp.Infrastructure.Persistence.AppDbContext
+$HOME/dotnet/dotnet ef migrations add Initial \
+  --project src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj \
+  --startup-project src/WeatherApp.Api/WeatherApp.Api.csproj \
+  --context WeatherApp.Infrastructure.Persistence.AppDbContext
+$HOME/dotnet/dotnet ef database update \
+  --project src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj \
+  --startup-project src/WeatherApp.Api/WeatherApp.Api.csproj \
+  --context WeatherApp.Infrastructure.Persistence.AppDbContext
 ```
 
-## 6. Acessibilidade (Diretrizes para o cliente)
+## 7. Acessibilidade
 
-- Linguagem clara, sem jargões e com hierarquia de informação.
-- Suporte a leitores de tela: rótulos, descrições, foco visível.
-- Contraste adequado e tamanhos de fonte ajustáveis.
-- Notificações/alertas com textos objetivos e tempo configurável.
-- Preferir comandos de voz/atalhos quando aplicável.
+- Componentes com rótulos semânticos e feedback visual/sonoro.
+- Bootstrap 5 e ícones pensados para contraste adequado.
+- Mensagens curtas e objetivas para erros/sucessos (`TempData`).
 
-## 7. Próximos Passos
-- Integrar cliente HTTP para provedor de clima externo (OpenWeather/Open-Meteo) com caching.
-- Adicionar migrações e dados seed.
-- Criar testes de unidade para serviços de domínio e aplicação.
-- Acrescentar autenticação/limites de rate se necessário.
+## 8. Próximos Passos
 
-## 8. Estrutura de Pastas
+- Integrar provedor externo de clima e persistir histórico de leituras.
+- Criar testes automatizados (xUnit) para serviços e políticas de domínio.
+- Implementar autenticação/autorizações e políticas de rate limiting.
+- Gerar migrações iniciais e dados seed para facilitar demonstrações.
+
+## 9. Estrutura de Pastas
+
 ```
 src/
   WeatherApp.Domain/
   WeatherApp.Application/
   WeatherApp.Infrastructure/
-  WeatherApp.Api/
+  WeatherApp.Api/   <-- MVC + Web API + Views Razor
 ```
 

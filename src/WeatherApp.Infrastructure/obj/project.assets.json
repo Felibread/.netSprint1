@@ -2417,19 +2417,19 @@
     ]
   },
   "packageFolders": {
-    "/home/ubuntu/.nuget/packages/": {}
+    "/Users/nataliadeoliveirasantos/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/workspace/src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj",
+      "projectUniqueName": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj",
       "projectName": "WeatherApp.Infrastructure",
-      "projectPath": "/workspace/src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj",
-      "packagesPath": "/home/ubuntu/.nuget/packages/",
-      "outputPath": "/workspace/src/WeatherApp.Infrastructure/obj/",
+      "projectPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Infrastructure/WeatherApp.Infrastructure.csproj",
+      "packagesPath": "/Users/nataliadeoliveirasantos/.nuget/packages/",
+      "outputPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Infrastructure/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/ubuntu/.nuget/NuGet/NuGet.Config"
+        "/Users/nataliadeoliveirasantos/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -2441,11 +2441,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/workspace/src/WeatherApp.Application/WeatherApp.Application.csproj": {
-              "projectPath": "/workspace/src/WeatherApp.Application/WeatherApp.Application.csproj"
+            "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Application/WeatherApp.Application.csproj": {
+              "projectPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Application/WeatherApp.Application.csproj"
             },
-            "/workspace/src/WeatherApp.Domain/WeatherApp.Domain.csproj": {
-              "projectPath": "/workspace/src/WeatherApp.Domain/WeatherApp.Domain.csproj"
+            "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/WeatherApp.Domain.csproj": {
+              "projectPath": "/Users/nataliadeoliveirasantos/.netSprint1/src/WeatherApp.Domain/WeatherApp.Domain.csproj"
             }
           }
         }
@@ -2496,7 +2496,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/home/ubuntu/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.415/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

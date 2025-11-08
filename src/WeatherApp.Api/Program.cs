@@ -10,6 +10,12 @@ using WeatherApp.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+});
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -21,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connect
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<IWeatherReadingRepository, WeatherReadingRepository>();
+builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<IAlertPolicyService, AlertPolicyService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
@@ -34,31 +41,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Minimal endpoints
-app.MapGet("/api/locations/search", async (string q, int limit, ILocationService service, CancellationToken ct) =>
-{
-    var result = await service.SearchAsync(q, limit, ct);
-    return result.Success ? Results.Ok(result.Value) : Results.BadRequest(new { error = result.Error });
-}).WithOpenApi();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-app.MapPost("/api/locations", async (CreateLocationRequest request, ILocationService service, CancellationToken ct) =>
-{
-    var result = await service.CreateAsync(request.Name, request.Latitude, request.Longitude, ct);
-    return result.Success ? Results.Created($"/api/locations/{result.Value!.Id}", result.Value) : Results.BadRequest(new { error = result.Error });
-}).WithOpenApi();
+app.UseRouting();
 
-app.MapGet("/api/weather/current/{locationId}", async (Guid locationId, IWeatherService service, CancellationToken ct) =>
-{
-    var result = await service.GetCurrentAsync(locationId, ct);
-    return result.Success ? Results.Ok(result.Value) : Results.NotFound(new { error = result.Error });
-}).WithOpenApi();
+app.UseAuthorization();
 
-app.MapGet("/api/alerts/{locationId}", async (Guid locationId, IAlertService service, CancellationToken ct) =>
-{
-    var result = await service.EvaluateAlertsAsync(locationId, ct);
-    return result.Success ? Results.Ok(result.Value) : Results.BadRequest(new { error = result.Error });
-}).WithOpenApi();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllers();
 
 app.Run();
-
-public record CreateLocationRequest(string Name, double Latitude, double Longitude);

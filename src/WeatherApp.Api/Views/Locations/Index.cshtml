@@ -1,0 +1,162 @@
+@model LocationListViewModel
+@{
+    ViewData["Title"] = "Locais";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Locais Monitorados</h1>
+        <p class="text-muted mb-0">Gerencie suas localizações, filtre por coordenadas e visualize dados meteorológicos.</p>
+    </div>
+    <div>
+        <a class="btn btn-primary" href="/locais/novo">
+            <i class="bi bi-plus-circle me-2"></i>Novo local
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h2 class="h5 mb-0">Filtros</h2>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="Filter.Name" class="form-label"></label>
+                <input asp-for="Filter.Name" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Filter.MinLatitude" class="form-label"></label>
+                <input asp-for="Filter.MinLatitude" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Filter.MaxLatitude" class="form-label"></label>
+                <input asp-for="Filter.MaxLatitude" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Filter.MinLongitude" class="form-label"></label>
+                <input asp-for="Filter.MinLongitude" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Filter.MaxLongitude" class="form-label"></label>
+                <input asp-for="Filter.MaxLongitude" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label for="SortBy" class="form-label">Ordenar por</label>
+                <select class="form-select" id="SortBy" name="SortBy" asp-for="Filter.SortBy">
+                    <option value="">Nome (padrão)</option>
+                    <option value="latitude" selected="@(Model.Filter.SortBy == "latitude")">Latitude</option>
+                    <option value="longitude" selected="@(Model.Filter.SortBy == "longitude")">Longitude</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label d-block">Direção</label>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" id="ascending" name="Ascending" value="true" @(Model.Filter.Ascending ? "checked" : "") />
+                    <label class="btn btn-outline-secondary" for="ascending">Asc</label>
+                    <input type="radio" class="btn-check" id="descending" name="Ascending" value="false" @(!Model.Filter.Ascending ? "checked" : "") />
+                    <label class="btn btn-outline-secondary" for="descending">Desc</label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label asp-for="Filter.PageSize" class="form-label"></label>
+                <input asp-for="Filter.PageSize" class="form-control" min="1" max="100" />
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-2"></i>Aplicar filtros
+                </button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>@Model.ErrorMessage
+    </div>
+}
+
+@if (Model.Items.Any())
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Latitude</td>
+                        <td>@item.Longitude</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary me-1" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="bi bi-eye me-1"></i>Detalhes
+                            </a>
+                            <a class="btn btn-sm btn-outline-secondary me-1" asp-action="Edit" asp-route-id="@item.Id">
+                                <i class="bi bi-pencil-square me-1"></i>Editar
+                            </a>
+                            <form action="/locais/remover/@item.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirmar remoção do local @item.Name?');">
+                                    <i class="bi bi-trash me-1"></i>Remover
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item @(Model.Pagination.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-PageNumber="@(Model.Pagination.PageNumber - 1)" asp-route-PageSize="@Model.Pagination.PageSize"
+                           asp-route-Name="@Model.Filter.Name" asp-route-MinLatitude="@Model.Filter.MinLatitude"
+                           asp-route-MaxLatitude="@Model.Filter.MaxLatitude" asp-route-MinLongitude="@Model.Filter.MinLongitude"
+                           asp-route-MaxLongitude="@Model.Filter.MaxLongitude" asp-route-SortBy="@Model.Filter.SortBy"
+                           asp-route-Ascending="@Model.Filter.Ascending">
+                            Anterior
+                        </a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Página @Model.Pagination.PageNumber de @(Model.Pagination.TotalPages == 0 ? 1 : Model.Pagination.TotalPages)
+                        </span>
+                    </li>
+                    <li class="page-item @(Model.Pagination.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-PageNumber="@(Model.Pagination.PageNumber + 1)" asp-route-PageSize="@Model.Pagination.PageSize"
+                           asp-route-Name="@Model.Filter.Name" asp-route-MinLatitude="@Model.Filter.MinLatitude"
+                           asp-route-MaxLatitude="@Model.Filter.MaxLatitude" asp-route-MinLongitude="@Model.Filter.MinLongitude"
+                           asp-route-MaxLongitude="@Model.Filter.MaxLongitude" asp-route-SortBy="@Model.Filter.SortBy"
+                           asp-route-Ascending="@Model.Filter.Ascending">
+                            Próxima
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Nenhum local encontrado no momento.
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
