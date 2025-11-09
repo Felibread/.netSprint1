@@ -1,6 +1,11 @@
-# WeatherApp Acessível (Clean Architecture + ASP.NET Core MVC)
+# WeatherApp Acessível (Clean Architecture + ASP.NET Core MVC) - Sprint 2
 
 Aplicação .NET 8 que combina uma camada Web MVC com uma Web API hipertextual para monitoramento de clima, gestão de localidades e geração de alertas inteligentes. A solução segue Clean Architecture para manter o domínio independente da infraestrutura.
+
+## INTEGRANTES
+Natália Santos - RM560306
+Alex ribeiro - RM557356
+Felipe damasceno -RM559433
 
 ## 1. Visão Geral do Projeto
 
