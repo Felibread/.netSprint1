@@ -76,12 +76,12 @@ $HOME/dotnet/dotnet build src/WeatherApp.sln -c Debug
 ### Executar
 
 ```bash
-$HOME/dotnet/dotnet run --project src/WeatherApp.Api/WeatherApp.Api.csproj --urls http://localhost:5187
-(pode ser outra porta, basta substituit pela certa)
+$HOME/dotnet/dotnet run --project src/WeatherApp.Api/WeatherApp.Api.csproj --urls http://localhost:5226
+(pode ser outra porta, basta substituit pela certa, a minha foi 5226)
 ```
 
-- UI MVC: `http://localhost:5187`
-- Swagger UI: `http://localhost:5187/swagger`
+- UI MVC: `http://localhost:5226`
+- Swagger UI: `http://localhost:5226/swagger`
 
 ## 4. Camada Web (MVC)
 
